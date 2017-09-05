@@ -1,0 +1,12 @@
+---
+- hosts: all
+  become: true
+  user: vagrant
+  tasks:
+    - name: update apt cache
+      apt: update_cache=yes
+    - name: Install php
+      apt: name={{item}} state=present
+      with_items:
+        - php7.0
+        - nginx  
