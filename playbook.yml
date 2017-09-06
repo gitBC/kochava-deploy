@@ -27,14 +27,22 @@
         - php7.0-zip
         - redis-server
         - golang-go
+        - npm
+        - composer
 
     #Clone PHP Application Repo
     - name: Clone PHP Repo
       git:
-        repo: git@github.com:gitBC/kochava-php.git
+        repo: https://github.com/gitBC/kochava-php.git
         dest: /var/www
         update: yes
-        accept_hostkey: yes
+
+    #Clone Go Application Repo
+    - name: Clone GO Repo
+      git:
+        repo: https://github.com/gitBC/kochava-go.git
+        dest: /usr/share/go/src/kochava-go
+        update: yes
 
     ##Set NGINX Config
     - name: Copy template Nginx Site config into place
@@ -49,6 +57,10 @@
     - name: restart nginx to ensure site conf found
       service: name=nginx state=restarted
 
+    ##install composer dependenices
+    - name: "Install composer depenedencies in PHP application"
+      composer: command=install working_dir=/var/www
+
     ##Set REDIS Config
     - name: Copy template REDIS Site config into place
       template: 
@@ -57,3 +69,16 @@
     - name: restart Redis to ensure new conf found
       service: name=nginx state=restarted
 
+    ##Set PHP .env Config
+    - name: Copy template PHP.env Site config into place
+      copy: 
+        src=/var/www/.env.example
+        dest=/var/www/.env
+        remote_src=True
+
+
+    # #install composer
+    # - name: Install Composer and move to bin with name composer
+    #   raw: "php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\""
+    #   raw: "php composer-setup.php --install-dir=bin --filename=composer"
+    #   raw: "php -r \"unlink('composer-setup.php');\""
