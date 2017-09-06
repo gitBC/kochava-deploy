@@ -31,8 +31,9 @@
     #Clone PHP Application Repo
     - name: Clone PHP Repo
       git:
-        repo: ssh://git@github.com:gitBC/kochava-php.git
+        repo: git@github.com:gitBC/kochava-php.git
         dest: /var/www
+        update: yes
         accept_hostkey: yes
 
     ##Set NGINX Config
