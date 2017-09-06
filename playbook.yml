@@ -27,3 +27,24 @@
         - php7.0-zip
         - redis-server
         - golang-go
+
+    ##Set NGINX Config
+    - name: Copy template Nginx Site config into place
+      template: 
+        src=templates/nginx.conf.j2
+        dest=/etc/nginx/sites-available/koc.app
+    - name: enable the site in nginx
+      file:
+        src=/etc/nginx/sites-available/koc.app
+        dest=/etc/nginx/sites-enables/koc.app
+        state=link
+    - name: restart nginx to ensure site conf found
+      service: name=nginx state=restarted
+
+    ##Set REDIS Config
+    - name: Copy template REDIS Site config into place
+      template: 
+        src=templates/redis.conf.j2
+        dest=/etc/redis/redis.conf
+    - name: restart Redis to ensure new conf found
+      service: name=nginx state=restarted
