@@ -28,6 +28,13 @@
         - redis-server
         - golang-go
 
+    #Clone PHP Application Repo
+    - name: Clone PHP Repo
+      git:
+        repo: ssh://git@github.com:gitBC/kochava-php.git
+        dest: /var/www
+        accept_hostkey: yes
+
     ##Set NGINX Config
     - name: Copy template Nginx Site config into place
       template: 
@@ -48,3 +55,4 @@
         dest=/etc/redis/redis.conf
     - name: restart Redis to ensure new conf found
       service: name=nginx state=restarted
+
