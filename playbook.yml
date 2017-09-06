@@ -19,8 +19,9 @@
     - name: Install php
       apt: name={{item}} state=present
       with_items:
-        - php7.0
+        - mysql-server
         - nginx
+        - php7.0
         - php7.0-fpm
         - php7.0-mbstring
         - php7.0-mysql
@@ -72,15 +73,16 @@
     ##Set PHP .env Config
     - name: Copy template PHP.env Site config into place
       copy: 
-        src=/var/www/.env.example
+        src=templates/.env.php.j2
         dest=/var/www/.env
-        remote_src=True
-        force=no
 
     #Set log directory to writable, horriably
     - name: Give shitty 777 permissions to logs
       raw: "chmod 777 /var/www/storage/logs" 
 
+    #Run Artisan to migrate database
+    - name: Run Artisan to migrate database
+      raw: "php /var/www/artisan migrate"
 
     # #install composer
     # - name: Install Composer and move to bin with name composer
