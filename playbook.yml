@@ -2,6 +2,17 @@
 - hosts: all
   become: true
   user: vagrant
+
+  #we will gather facts later after ensuring python is installed
+  gather_facts: False
+
+  #Ubuntu 16.04 doesnt come with python 2.7 which ansible uses. 
+  #so we will use a raw command to install it before we gather_facts
+  pre_tasks:
+    - name: install python 2
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+    - setup: #get the gather_facts
+
   tasks:
     - name: update apt cache
       apt: update_cache=yes
@@ -9,4 +20,4 @@
       apt: name={{item}} state=present
       with_items:
         - php7.0
-        - nginx  
+        - nginx
