@@ -75,6 +75,11 @@
         src=/var/www/.env.example
         dest=/var/www/.env
         remote_src=True
+        force=no
+
+    #Set log directory to writable, horriably
+    - name: Give shitty 777 permissions to logs
+      raw: "chmod 777 /var/www/storage/logs" 
 
 
     # #install composer
