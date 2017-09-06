@@ -36,7 +36,7 @@
     - name: enable the site in nginx
       file:
         src=/etc/nginx/sites-available/koc.app
-        dest=/etc/nginx/sites-enables/koc.app
+        dest=/etc/nginx/sites-enabled/koc.app
         state=link
     - name: restart nginx to ensure site conf found
       service: name=nginx state=restarted
