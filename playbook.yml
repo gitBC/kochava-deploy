@@ -21,3 +21,9 @@
       with_items:
         - php7.0
         - nginx
+        - php7.0-fpm
+        - php7.0-mbstring
+        - php7.0-mysql
+        - php7.0-zip
+        - redis-server
+        - golang-go
