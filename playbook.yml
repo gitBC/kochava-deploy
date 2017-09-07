@@ -26,6 +26,7 @@
         - php7.0-fpm
         - php7.0-mbstring
         - php7.0-mysql
+        - php7.0-xml
         - php7.0-zip
         - redis-server
         - golang-go
@@ -69,7 +70,7 @@
         src=templates/redis.conf.j2
         dest=/etc/redis/redis.conf
     - name: restart Redis to ensure new conf found
-      service: name=nginx state=restarted
+      service: name=redis-server state=restarted
 
     ##Set PHP .env Config
     - name: Copy template PHP.env Site config into place
@@ -79,7 +80,15 @@
 
     #Set log directory to writable, horriably
     - name: Give shitty 777 permissions to logs
-      raw: "chmod 777 /var/www/storage/logs" 
+      file:
+        path: "/var/www/storage/logs/lumen.log"
+        state: file
+        mode: 0777
+    - name: "Give shitty 777 permissions to logs2"
+      file: 
+        path: "/var/www/storage/logs"
+        mode: 0777
+        recurse: no
 
     - name: Add Mysql Database to server
       mysql_db:
