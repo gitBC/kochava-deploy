@@ -20,6 +20,7 @@
       apt: name={{item}} state=present
       with_items:
         - mysql-server
+        - python-mysqldb
         - nginx
         - php7.0
         - php7.0-fpm
@@ -80,9 +81,21 @@
     - name: Give shitty 777 permissions to logs
       raw: "chmod 777 /var/www/storage/logs" 
 
+    - name: Add Mysql Database to server
+      mysql_db:
+        name: homestead 
+        state: present
+
+    - name: Add MYSQL user
+      mysql_user:
+        name: homestead
+        password: secret
+        priv: '*.*:ALL'
+        state: present
+      
     #Run Artisan to migrate database
     - name: Run Artisan to migrate database
-      raw: "php /var/www/artisan migrate"
+      raw: "php /var/www/artisan migrate --force"
 
     # #install composer
     # - name: Install Composer and move to bin with name composer
