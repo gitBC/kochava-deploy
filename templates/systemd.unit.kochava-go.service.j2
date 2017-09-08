@@ -10,8 +10,8 @@ Group=root
 LimitNOFILE=1024
 
 Restart=always
-RestartSec=100ms
-#startLimitIntervalSec=60
+StartLimitBurst=0
+StartLimitIntervalSec=0
 
 WorkingDirectory=/root/go/src/kochava-go
 ExecStart=/root/go/src/kochava-go/kochava-go
