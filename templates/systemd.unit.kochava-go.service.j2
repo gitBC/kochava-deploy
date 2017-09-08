@@ -1,0 +1,29 @@
+[Unit]
+Description=Kochava Delivery service
+ConditionPathExists=/root/go/src/kochava-go
+After=network.target
+ 
+[Service]
+Type=simple
+User=root
+Group=root
+LimitNOFILE=1024
+
+Restart=always
+RestartSec=100ms
+#startLimitIntervalSec=60
+
+WorkingDirectory=/root/go/src/kochava-go
+ExecStart=/root/go/src/kochava-go/kochava-go
+
+# make sure log directory exists and owned by syslog
+#PermissionsStartOnly=true
+#ExecStartPre=/bin/mkdir -p /var/log/kochava
+#ExecStartPre=/bin/chown syslog:adm /var/log/kochava
+#ExecStartPre=/bin/chmod 755 /var/log/kochava
+#StandardOutput=syslog
+#StandardError=syslog
+#SyslogIdentifier=kochava-go
+ 
+[Install]
+WantedBy=multi-user.target

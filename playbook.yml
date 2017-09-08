@@ -44,8 +44,18 @@
     - name: Clone GO Repo
       git:
         repo: https://github.com/gitBC/kochava-go.git
-        dest: /usr/share/go/src/kochava-go
+        dest: /root/go/src/kochava-go
         update: yes
+
+    ##Set PHP .env Config
+    - name: Copy template PHP.env Site config into place
+      copy: 
+        src=templates/.env.go.j2
+        dest=/root/go/src/kochava-go/.env
+
+
+    - name: Export gopath & build go application
+      raw: "export GOPATH=\"/root/go\" && cd /root/go/src/kochava-go && go get && go build"
 
     ##Set NGINX Config
     - name: Copy template Nginx Site config into place
@@ -63,6 +73,13 @@
     ##install composer dependenices
     - name: "Install composer depenedencies in PHP application"
       composer: command=install working_dir=/var/www
+
+
+    ##Set REDIS Config
+    - name: Copy template Kochava-go unit config into place
+      template: 
+        src=templates/systemd.unit.kochava-go.service.j2
+        dest=/lib/systemd/system/kochava-go.service
 
     ##Set REDIS Config
     - name: Copy template REDIS Site config into place
@@ -105,6 +122,14 @@
     #Run Artisan to migrate database
     - name: Run Artisan to migrate database
       raw: "php /var/www/artisan migrate --force"
+
+
+
+    - name: Enable Go-Service to 
+      systemd: 
+        name: kochava-go
+        enabled: yes
+        state: started
 
     # #install composer
     # - name: Install Composer and move to bin with name composer
