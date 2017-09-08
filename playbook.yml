@@ -37,7 +37,7 @@
     - name: Clone PHP Repo
       git:
         repo: https://github.com/gitBC/kochava-php.git
-        dest: /var/www
+        dest: /var/www/koc
         update: yes
 
     #Clone Go Application Repo
@@ -72,7 +72,7 @@
 
     ##install composer dependenices
     - name: "Install composer depenedencies in PHP application"
-      composer: command=install working_dir=/var/www
+      composer: command=install working_dir=/var/www/koc
 
 
     ##Set REDIS Config
@@ -93,17 +93,17 @@
     - name: Copy template PHP.env Site config into place
       copy: 
         src=templates/.env.php.j2
-        dest=/var/www/.env
+        dest=/var/www/koc/.env
 
     #Set log directory to writable, horriably
     - name: Give shitty 777 permissions to logs
       file:
-        path: "/var/www/storage/logs/lumen.log"
+        path: "/var/www/koc/storage/logs/lumen.log"
         state: file
         mode: 0777
     - name: "Give shitty 777 permissions to logs2"
       file: 
-        path: "/var/www/storage/logs"
+        path: "/var/www/koc/storage/logs"
         mode: 0777
         recurse: no
 
@@ -121,7 +121,7 @@
       
     #Run Artisan to migrate database
     - name: Run Artisan to migrate database
-      raw: "php /var/www/artisan migrate --force"
+      raw: "php /var/www/koc/artisan migrate --force"
 
 
 
