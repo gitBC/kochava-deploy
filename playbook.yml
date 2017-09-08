@@ -99,7 +99,7 @@
     - name: Give shitty 777 permissions to logs
       file:
         path: "/var/www/koc/storage/logs/lumen.log"
-        state: file
+        state: touch
         mode: 0777
     - name: "Give shitty 777 permissions to logs2"
       file: 
