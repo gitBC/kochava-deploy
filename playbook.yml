@@ -36,6 +36,17 @@
         - npm
         - composer
 
+    #Remove Old versions of packages if installed in production envs
+    - name: Remove old versions of php in production
+      apt: name={{item}} state=absent
+      with_items:
+        - php7.0
+        - php7.0-fpm
+        - php7.0-mbstring
+        - php7.0-mysql
+        - php7.0-xml
+        - php7.0-zip
+
     #Clone PHP Application Repo
     - name: Clone PHP Repo
       git:
