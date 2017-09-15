@@ -14,8 +14,9 @@
     - setup: #get the gather_facts
 
   tasks:
-    - name: Add PHP7.1 PPA
-      apt_repository: 'ppa"ondrej/php' 
+    - name: "Add PHP7.1 PPA"
+      apt_repository: 
+        repo: "ppa:ondrej/php" 
     - name: update apt cache
       apt: update_cache=yes
     - name: Install php
@@ -24,7 +25,7 @@
         - mysql-server
         - python-mysqldb
         - nginx
-        - php7.!
+        - php7.1
         - php7.1-fpm
         - php7.1-mbstring
         - php7.1-mysql
