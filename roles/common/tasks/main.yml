@@ -1,2 +1,14 @@
 ---
 # tasks file for common
+
+#Ubuntu 16.04 doesnt come with python 2.7 which ansible uses. 
+#so we will use a raw command to install it before we gather_facts
+- name: install python 2
+  raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+
+
+- name: update apt cache
+  apt:
+    update_cache: yes
+
+- setup: #get the gather_facts

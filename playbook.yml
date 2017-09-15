@@ -1,29 +1,148 @@
 ---
-- hosts: all
+- name: PROVISION
+  
+  #which servers are we deploying to?
   become: true
-  user: vagrant
-
+    
   #we will gather facts later after ensuring python is installed
   gather_facts: False
+  vars:
+    playbook: playbook.yml
+    extra_vars_command: "{{ (playbook == 'playbook.yml') | ternary('env=<environment>', '\"env=<environment>\"') }}"
+  hosts: "{{ env }}"
 
-  #Ubuntu 16.04 doesnt come with python 2.7 which ansible uses. 
-  #so we will use a raw command to install it before we gather_facts
-  pre_tasks:
-    - name: install python 2
-      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
-    - setup: #get the gather_facts
-
+  #download set env var, install python
   tasks:
-    - name: "Add PHP7.1 PPA"
-      apt_repository: 
-        repo: "ppa:ondrej/php" 
-    - name: update apt cache
-      apt: update_cache=yes
-    - name: Install php
-      apt: name={{item}} state=present
+    - name: Ensure environment is defined
+      fail:
+        msg: |
+          Environment missing. Use `-e` to define `env`:
+          ansible-playbook {{ playbook }} -e {{ extra_vars_command }}
+      when: env is not defined
+      
+
+#Ubuntu 16.04 doesnt come with python 2.7 which ansible uses.  so we will use a raw command to install it before we gather_facts
+- name: "install python 2  is this ubuntu 16.04"
+  gather_facts: false
+  hosts: "{{ env }}"
+  become: yes
+  roles: [ common ]
+
+
+
+
+
+  #GO SERVERS
+- name: Install Go Application
+  hosts: go_server:&{{ env }}
+  become: yes
+  tasks:
+    #GO Apt packages
+    - name: Install Apt packages
+      apt: 
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - golang-go
+
+    #Clone Go Application Repo
+    - name: Clone GO Repo
+      git:
+        repo: https://github.com/gitBC/kochava-go.git
+        dest: /root/go/src/kochava-go
+        update: yes
+
+      ##Set Go .env Config
+    - name: Copy template go.env variable config into place
+      copy: 
+        src=templates/.env.go.j2
+        dest=/root/go/src/kochava-go/.env
+
+    - name: Export gopath & build go application
+      raw: "export GOPATH=\"/root/go\" && cd /root/go/src/kochava-go && go get && go build"
+
+    ##Set SYSTEMD KOCHAVA Service Config
+    - name: Copy template Kochava-go unit config into place
+      template: 
+        src=templates/systemd.unit.kochava-go.service.j2
+        dest=/lib/systemd/system/kochava-go.service
+
+    # Enable Go Service
+    - name: Enable Go-Service to 
+      systemd: 
+        name: kochava-go
+        enabled: yes
+        state: started
+
+#REDIS SERVERS
+- name: Install Redis Requirements
+  hosts: redis_servers:&{{ env }}
+  become: yes
+  tasks:        
+    #Apt Packages for REDIS
+    - name: Install Apt packages
+      apt: 
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - redis-server
+
+    ##Set REDIS Config
+    - name: Copy template REDIS Site config into place
+      template: 
+        src=templates/redis.conf.j2
+        dest=/etc/redis/redis.conf
+    
+    #Restart REDIS DAEMON
+    - name: restart Redis to ensure new conf found
+      service: name=redis-server state=restarted
+
+
+
+
+#DATABASE SERVERS
+- name: Install Mysql Requirements
+  hosts: db_server:&{{ env }}
+  become: yes
+  tasks:
+
+    #mysql APT packages (super cow powers)    
+    - name: Install Apt packages
+      apt: 
+        name: "{{ item }}"
+        state: present
       with_items:
         - mysql-server
         - python-mysqldb
+
+    - name: Add Mysql Database to server
+      mysql_db:
+        name: homestead 
+        state: present
+
+    - name: Add MYSQL user
+      mysql_user:
+        name: homestead
+        password: secret
+        priv: '*.*:ALL'
+        state: present
+
+
+
+
+#PHP SERVERS    
+- name: Install PHP dependencies
+  hosts: php_server:&{{ env }} 
+  tasks:
+    - name: "Add PHP7.1 Repo via PPA"
+      apt_repository: 
+        repo: "ppa:ondrej/php" 
+    
+    - name: Install Apt packages
+      apt: 
+        name: "{{ item }}"
+        state: present
+      with_items:
         - nginx
         - php7.1
         - php7.1-fpm
@@ -31,14 +150,13 @@
         - php7.1-mysql
         - php7.1-xml
         - php7.1-zip
-        - redis-server
-        - golang-go
-        - npm
         - composer
 
     #Remove Old versions of packages if installed in production envs
     - name: Remove old versions of php in production
-      apt: name={{item}} state=absent
+      apt: 
+        name: "{{ item }}"
+        state: absent
       with_items:
         - php7.0
         - php7.0-fpm
@@ -53,23 +171,6 @@
         repo: https://github.com/gitBC/kochava-php.git
         dest: /var/www/koc
         update: yes
-
-    #Clone Go Application Repo
-    - name: Clone GO Repo
-      git:
-        repo: https://github.com/gitBC/kochava-go.git
-        dest: /root/go/src/kochava-go
-        update: yes
-
-    ##Set PHP .env Config
-    - name: Copy template PHP.env Site config into place
-      copy: 
-        src=templates/.env.go.j2
-        dest=/root/go/src/kochava-go/.env
-
-
-    - name: Export gopath & build go application
-      raw: "export GOPATH=\"/root/go\" && cd /root/go/src/kochava-go && go get && go build"
 
     ##Set NGINX Config
     - name: Copy template Nginx Site config into place
@@ -88,21 +189,6 @@
     - name: "Install composer depenedencies in PHP application"
       composer: command=install working_dir=/var/www/koc
 
-
-    ##Set REDIS Config
-    - name: Copy template Kochava-go unit config into place
-      template: 
-        src=templates/systemd.unit.kochava-go.service.j2
-        dest=/lib/systemd/system/kochava-go.service
-
-    ##Set REDIS Config
-    - name: Copy template REDIS Site config into place
-      template: 
-        src=templates/redis.conf.j2
-        dest=/etc/redis/redis.conf
-    - name: restart Redis to ensure new conf found
-      service: name=redis-server state=restarted
-
     ##Set PHP .env Config
     - name: Copy template PHP.env Site config into place
       copy: 
@@ -110,43 +196,18 @@
         dest=/var/www/koc/.env
 
     #Set log directory to writable, horriably
-    - name: Give shitty 777 permissions to logs
+    - name: Give shitty 775 permissions to logs
       file:
         path: "/var/www/koc/storage/logs/lumen.log"
         state: touch
-        mode: 0777
-    - name: "Give shitty 777 permissions to logs2"
+        mode: 0775
+
+    - name: "Give shitty 775 permissions to logs2"
       file: 
         path: "/var/www/koc/storage/logs"
-        mode: 0777
+        mode: 0775
         recurse: no
 
-    - name: Add Mysql Database to server
-      mysql_db:
-        name: homestead 
-        state: present
-
-    - name: Add MYSQL user
-      mysql_user:
-        name: homestead
-        password: secret
-        priv: '*.*:ALL'
-        state: present
-      
     #Run Artisan to migrate database
     - name: Run Artisan to migrate database
       raw: "php /var/www/koc/artisan migrate --force"
-
-
-
-    - name: Enable Go-Service to 
-      systemd: 
-        name: kochava-go
-        enabled: yes
-        state: started
-
-    # #install composer
-    # - name: Install Composer and move to bin with name composer
-    #   raw: "php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\""
-    #   raw: "php composer-setup.php --install-dir=bin --filename=composer"
-    #   raw: "php -r \"unlink('composer-setup.php');\""

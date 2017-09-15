@@ -67,7 +67,7 @@ tcp-backlog 511
 # Examples:
 #
 # bind 192.168.1.100 10.0.0.1
-bind 127.0.0.1
+#bind 127.0.0.1
 
 # Specify the path for the Unix socket that will be used to listen for
 # incoming connections. There is no default, so Redis will not listen
@@ -145,9 +145,7 @@ databases 16
 #
 #   save ""
 
-save 900 1
-save 300 10
-save 60 10000
+save 1 1
 
 # By default Redis will stop accepting writes if RDB snapshots are enabled
 # (at least one save point) and the latest background save failed.

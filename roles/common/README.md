@@ -1,12 +1,11 @@
-Role Name
+common
 =========
 
-A brief description of the role goes here.
+This role is meant to first install python on an Ubuntu 16.06 host so that ansible can work with it, as well as a few other necessities
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
 
 Role Variables
 --------------
