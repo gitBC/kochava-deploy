@@ -133,6 +133,7 @@
 #PHP SERVERS    
 - name: Install PHP dependencies
   hosts: php_server:&{{ env }} 
+  become: true
   tasks:
     - name: "Add PHP7.1 Repo via PPA"
       apt_repository: 
