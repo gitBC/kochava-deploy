@@ -31,6 +31,14 @@
 
 
 
+- name: add selfreference
+  hosts: "{{ env }}"
+  become: yes
+  tasks:
+   - lineinfile: dest=/etc/hosts line="127.0.0.1 koc.app" state=present
+
+
+
 
   #GO SERVERS
 - name: Install Go Application
