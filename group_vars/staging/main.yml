@@ -36,6 +36,30 @@ go_redis_delivery_attempts: "{{vault_go_redis_delivery_attempts}}"
 go_details_api: "{{vault_go_details_api}}"
 
 
+
+# ######### MYSQL VARS #########
+
+# go_redis_server: "{{valut_go_redis_server}}"
+# go_redis_port: "{{valut_go_redis_port}}"
+# go_redis_password: "{{valut_go_redis_password}}"
+# go_redis_database: "{{valut_go_redis_database}}"
+# go_redis_delivery_attemps: "{{valut_go_redis_password}}"
+
+# go_redis_details_api: "{{valut_go_redis_details_api}}"
+
+
+
+# ######### REDIS VARS #########
+
+# go_redis_server: "{{valut_go_redis_server}}"
+# go_redis_port: "{{valut_go_redis_port}}"
+# go_redis_password: "{{valut_go_redis_password}}"
+# go_redis_database: "{{valut_go_redis_database}}"
+# go_redis_delivery_attemps: "{{valut_go_redis_password}}"
+
+# go_details_api: "{{valut_go_details_api}}"
+
+
 # php: 
 #   app:    
 #     env: "{{vault_php_app_env}}"

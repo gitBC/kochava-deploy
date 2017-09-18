@@ -1,3 +1,70 @@
 ---
 server_user: vagrant
-env: development
+env: local
+
+
+
+######### PHP VARS #########
+
+vault_php_app_env: local
+vault_php_app_debug: true
+vault_php_app_key: base64:HDfUgb4sVQ0HWpktOEI91xn2M8/DSJMFBLhlUQU75KY=
+vault_php_app_timezone: UTC
+
+vault_php_db_connection: mysql
+vault_php_db_host: 127.0.0.1
+vault_php_db_port: 3306
+vault_php_db_database: homestead
+vault_php_db_username: homestead
+vault_php_db_password: secret
+
+vault_php_cache_driver: file
+vault_php_queue_driver: redis
+
+vault_php_redis_cluster: false
+
+vault_php_redis_host: 127.0.0.1
+vault_php_redis_port: 9736
+vault_php_redis_database: 0
+vault_php_redis_password: foobared
+
+
+
+######### GO VARS #########
+
+vault_go_redis_server: "{{vault_php_redis_host}}"
+vault_go_redis_port: "{{vault_php_redis_port}}"
+vault_go_redis_database: "{{vault_php_redis_database}}"
+vault_go_redis_password: "{{vault_php_redis_password}}"
+
+vault_go_redis_delivery_attempts: 5
+vault_go_details_api: "http://koc.app/digest"
+
+
+
+
+# vault_php:
+#   app:    
+#     env: local
+#     debug: true
+#     key: base64:HDfUgb4sVQ0HWpktOEI91xn2M8/DSJMFBLhlUQU75KY=
+#     timezone: UTC
+
+#   db:
+#     connection: mysql
+#     host: 127.0.0.1
+#     port: 3306
+#     databse: homestead
+#     username: homestead
+#     password: secret
+
+#   drivers:
+#     cache: file
+#     queue: redis
+
+#   redis:
+#     cluser: false
+#     host: 127.0.0.1
+#     port: 6379
+#     databse: 0
+#     password: null

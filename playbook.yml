@@ -52,11 +52,24 @@
         dest: /root/go/src/kochava-go
         update: yes
 
-      ##Set Go .env Config
-    - name: Copy template go.env variable config into place
-      copy: 
-        src=templates/.env.go.j2
-        dest=/root/go/src/kochava-go/.env
+    #   ##Set Go .env Config
+    # - name: Copy template go.env variable config into place
+    #   copy: 
+    #     src=templates/.env.go.j2
+    #     dest=/root/go/src/kochava-go/.env
+
+    - name: Copy Go .env.example to ansible host to use as Jinja Template
+      run_once: true
+      fetch:
+        src: /root/go/src/kochava-go/.env.example
+        dest: /tmp/go.env.example
+        flat: yes
+        fail_on_missing: yes
+
+    - name: Use copied .env.example as .env jinja template 
+      template:
+        src: /tmp/go.env.example
+        dest: /root/go/src/kochava-go/.env
 
     - name: Export gopath & build go application
       raw: "export GOPATH=\"/root/go\" && cd /root/go/src/kochava-go && go get && go build"
@@ -73,6 +86,10 @@
         name: kochava-go
         enabled: yes
         state: started
+
+
+
+
 
 #REDIS SERVERS
 - name: Install Redis Requirements
@@ -117,13 +134,13 @@
 
     - name: Add Mysql Database to server
       mysql_db:
-        name: homestead 
+        name: "{{php_db_database}}"
         state: present
 
     - name: Add MYSQL user
       mysql_user:
-        name: homestead
-        password: secret
+        name: "{{php_db_username}}"
+        password: "{{php_db_password}}"
         priv: '*.*:ALL'
         state: present
 
@@ -190,11 +207,24 @@
     - name: "Install composer depenedencies in PHP application"
       composer: command=install working_dir=/var/www/koc
 
+    - name: Copy PHP .env.example to ansible host to use as Jinja Template
+      run_once: true
+      fetch:
+        src: /var/www/koc/.env.example
+        dest: /tmp/.env.example
+        flat: yes
+        fail_on_missing: yes
+
+    - name: Use copied .env.example as .env jinja templat
+      template:
+        src: /tmp/.env.example
+        dest: /var/www/koc/.env
+
     ##Set PHP .env Config
-    - name: Copy template PHP.env Site config into place
-      copy: 
-        src=templates/.env.php.j2
-        dest=/var/www/koc/.env
+    # - name: Copy template PHP.env Site config into place
+    #   copy: 
+    #     src=templates/.env.php.j2
+    #     dest=/var/www/koc/.env
 
     #Set log directory to writable, horriably
     - name: Give shitty 777 permissions to logs

@@ -1,5 +1,4 @@
 
-
 ######### PHP VARS #########
 
 php_app_env: "{{vault_php_app_env}}"
@@ -34,30 +33,3 @@ go_redis_database: "{{vault_go_redis_database}}"
 go_redis_delivery_attempts: "{{vault_go_redis_delivery_attempts}}"
 
 go_details_api: "{{vault_go_details_api}}"
-
-
-# php: 
-#   app:    
-#     env: "{{vault_php_app_env}}"
-#     default: "{{vault_php_app_env}}"
-#     key: "{{vault_php_app_key}}"
-#     timezone: "{{vault_php_app_timezone}}"
-
-#   db:
-#     connection: "{{vault_php_db_connection}}"
-#     host: "{{vault_php_db_host}}"
-#     port: "{{vault_php_db_port}}"
-#     databse: "{{vault_php_db_database}}"
-#     username: "{{vault_php_db_username}}"
-#     password: "{{vault_php_db_password}}"
-
-#   drivers:
-#     cache: "{{vault_php_cache_driver}}"
-#     queue: "{{vault_php_queue_driver}}"
-
-#   redis:
-#     cluser: "{{vault_php_redis_cluster}}"
-#     host: "{{vault_php_redis_host}}"
-#     port: "{{vault_php_redis_port}}"
-#     databse: "{{vault_php_redis_database}}"
-#     password: "{{vault_php_redis_password}}"
