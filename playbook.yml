@@ -76,7 +76,7 @@
 
 #REDIS SERVERS
 - name: Install Redis Requirements
-  hosts: redis_servers:&{{ env }}
+  hosts: redis_server:&{{ env }}
   become: yes
   tasks:        
     #Apt Packages for REDIS

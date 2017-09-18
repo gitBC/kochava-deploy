@@ -12,7 +12,7 @@ localvm
 stagingvm
 production
 
-[redis_Server]
+[redis_server]
 localvm
 stagingvm
 production
