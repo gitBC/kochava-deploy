@@ -197,11 +197,11 @@
         dest=/var/www/koc/.env
 
     #Set log directory to writable, horriably
-    - name: Give shitty 775 permissions to logs
+    - name: Give shitty 777 permissions to logs
       file:
         path: "/var/www/koc/storage/logs/lumen.log"
         state: touch
-        mode: 0775
+        mode: 0777
 
     - name: "Give shitty 775 permissions to logs2"
       file: 
