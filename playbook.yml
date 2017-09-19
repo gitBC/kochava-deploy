@@ -30,7 +30,6 @@
 
 
 
-
 - name: add selfreference
   hosts: "{{ env }}"
   become: yes
@@ -197,6 +196,9 @@
         repo: https://github.com/gitBC/kochava-php.git
         dest: /var/www/koc
         update: yes
+
+    - name: NGINX | Remove Default Configuration
+      file: path=/etc/nginx/sites-enabled/default state=absent
 
     ##Set NGINX Config
     - name: Copy template Nginx Site config into place
